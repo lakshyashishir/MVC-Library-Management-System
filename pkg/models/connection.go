@@ -21,7 +21,7 @@ type Config struct {
 }
 
 func getDSN() string {
-	configFile, err := os.ReadFile("db.yaml")
+	configFile, err := os.ReadFile("config.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}

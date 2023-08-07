@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"mvc/pkg/models"
 	"mvc/pkg/views"
 	"net/http"
 )
@@ -22,5 +23,6 @@ func UserBooks(w http.ResponseWriter, request *http.Request) {
 
 func UserViewBook(w http.ResponseWriter, request *http.Request) {
 	t := views.UserViewBookPage()
-	t.Execute(w, nil)
+	b := models.GetBook()
+	t.Execute(w, b)
 }
