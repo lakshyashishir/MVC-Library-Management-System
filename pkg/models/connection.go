@@ -53,6 +53,6 @@ func Connect() (*sql.DB, error) {
 		return nil, fmt.Errorf("error pinging DB: %s", err)
 	}
 
-	fmt.Println("Connected to the database successfully")
+	// fmt.Println("Connected to the database successfully")
 	return db, nil
 }

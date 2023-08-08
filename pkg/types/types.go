@@ -25,30 +25,30 @@ const (
 )
 
 type User struct {
-	UserID   int
-	Username string
-	Hash     string
-	Salt     string
-	Role     UserRole
+	UserID   int      `json:"user_id"`
+	Username string   `json:"username"`
+	Hash     string   `json:"hash"`
+	Salt     string   `json:"salt"`
+	Role     UserRole `json:"role"`
 }
 
 type Book struct {
-	BookID     int
-	Title      string
-	Author     string
-	BookStatus BookStatus
-	Quantity   int
+	BookID     int        `json:"book_id"`
+	Title      string     `json:"title"`
+	Author     string     `json:"author"`
+	BookStatus BookStatus `json:"book_status"`
+	Quantity   int        `json:"quantity"`
 }
 
 type Request struct {
-	RequestID  int
-	UserID     int
-	BookID     int
-	BookStatus RequestStatus
+	RequestID  int           `json:"request_id"`
+	UserID     int           `json:"user_id"`
+	BookID     int           `json:"book_id"`
+	BookStatus RequestStatus `json:"book_status"`
 }
 
 type Cookie struct {
-	ID        int
-	SessionID string
-	UserID    int
+	ID        int    `json:"id"`
+	SessionID string `json:"session_id"`
+	UserID    int    `json:"user_id"`
 }

@@ -23,6 +23,10 @@ func UserBooks(w http.ResponseWriter, request *http.Request) {
 
 func UserViewBook(w http.ResponseWriter, request *http.Request) {
 	t := views.UserViewBookPage()
-	b := models.GetBook()
+	b, err := models.GetBook()
+	if err != nil {
+		http.Error(w, "Error getting book", http.StatusInternalServerError)
+		return
+	}
 	t.Execute(w, b)
 }

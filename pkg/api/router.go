@@ -26,7 +26,7 @@ func Start() {
 	r.HandleFunc("/login", controller.Home).Methods("POST")
 	r.HandleFunc("/logout", controller.Home).Methods("POST")
 	r.HandleFunc("/signup", controller.Home).Methods("POST")
-	r.HandleFunc("/addBook", controller.Home).Methods("POST")
+	r.HandleFunc("/addBook", controller.AddBook).Methods("POST")
 	r.HandleFunc("/user/request", controller.Home).Methods("POST")
 	r.HandleFunc("/user/return", controller.Home).Methods("POST")
 	r.HandleFunc("/user/removeRequest", controller.Home).Methods("POST")
