@@ -89,6 +89,51 @@ func ApproveAdmin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin", http.StatusSeeOther)
 }
 
+func ApproveBookRequest(w http.ResponseWriter, r *http.Request) {
+	requestIDStr := r.FormValue("requestID")
+	bookIDStr := r.FormValue("bookID")
+
+	requestID, err := strconv.Atoi(requestIDStr)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error converting requestID to integer: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	bookID, err := strconv.Atoi(bookIDStr)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error converting bookID to integer: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	CheckRoleAdmin(w, r)
+	err = models.ApproveBookRequestPost(requestID, bookID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error approving book request: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/requests", http.StatusSeeOther)
+}
+
+func RejectBookRequest(w http.ResponseWriter, r *http.Request) {
+	requestIDStr := r.FormValue("requestID")
+
+	requestID, err := strconv.Atoi(requestIDStr)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error converting requestID to integer: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	CheckRoleAdmin(w, r)
+	err = models.RejectBookRequestPost(requestID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error rejecting book request: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/requests", http.StatusSeeOther)
+}
+
 func CheckRoleAdmin(w http.ResponseWriter, r *http.Request) {
 	getUser, err := models.Auth(w, r)
 	if err != nil {

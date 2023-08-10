@@ -33,7 +33,7 @@ func GetRequests() {
 	fmt.Println(BookList)
 }
 
-func ApproveBookPost(request_id int) error {
+func ApproveBookRequestPost(requestID int, bookID int) error {
 	db, err := Connect()
 	if err != nil {
 		return fmt.Errorf("error connecting to DB: %s", err)
@@ -41,7 +41,12 @@ func ApproveBookPost(request_id int) error {
 
 	defer db.Close()
 
-	_, err = db.Query("UPDATE requests SET book_status = 'approved' WHERE request_id = ?", request_id)
+	_, err = db.Query("UPDATE requests SET book_status = 'approved' WHERE request_id = ?", requestID)
+	if err != nil {
+		return fmt.Errorf("error updating book: %s", err)
+	}
+
+	_, err = db.Query("UPDATE books SET status = 'not available' WHERE book_id = ?", bookID)
 	if err != nil {
 		return fmt.Errorf("error updating book: %s", err)
 	}
@@ -49,7 +54,7 @@ func ApproveBookPost(request_id int) error {
 	return nil
 }
 
-func RejectBookPost(title string) error {
+func RejectBookRequestPost(requestID int) error {
 	db, err := Connect()
 	if err != nil {
 		return fmt.Errorf("error connecting to DB: %s", err)
@@ -57,7 +62,7 @@ func RejectBookPost(title string) error {
 
 	defer db.Close()
 
-	_, err = db.Query("DELETE FROM books WHERE Title = ?", title)
+	_, err = db.Query("UPDATE requests SET book_status = 'rejected' WHERE request_id = ?", requestID)
 	if err != nil {
 		return fmt.Errorf("error deleting book: %s", err)
 	}

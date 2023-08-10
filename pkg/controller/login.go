@@ -66,3 +66,20 @@ func LoginPost(w http.ResponseWriter, request *http.Request) {
 		http.Redirect(w, request, "/login", http.StatusSeeOther)
 	}
 }
+
+func Logout(w http.ResponseWriter, request *http.Request) {
+	cookie, err := request.Cookie("SessionID")
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, request, "/login", http.StatusSeeOther)
+		return
+	}
+	fmt.Println(cookie.Value)
+	err = models.DeleteSessionID(cookie.Value)
+	if err != nil {
+		fmt.Println(err)
+	}
+	cookie.MaxAge = -1
+	http.SetCookie(w, cookie)
+	http.Redirect(w, request, "/login", http.StatusSeeOther)
+}
