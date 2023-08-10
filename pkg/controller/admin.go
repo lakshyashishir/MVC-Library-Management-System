@@ -9,12 +9,14 @@ import (
 	"strconv"
 )
 
-func Admin(w http.ResponseWriter, request *http.Request) {
+func Admin(w http.ResponseWriter, r *http.Request) {
+	CheckRoleAdmin(w, r)
 	t := views.AdminPage()
 	t.Execute(w, nil)
 }
 
-func AdminRequests(w http.ResponseWriter, request *http.Request) {
+func AdminRequests(w http.ResponseWriter, r *http.Request) {
+	CheckRoleAdmin(w, r)
 	t := views.AdminRequestsPage()
 	requests, err := models.GetAdminRequests()
 	fmt.Println(requests)
@@ -25,7 +27,8 @@ func AdminRequests(w http.ResponseWriter, request *http.Request) {
 	t.Execute(w, nil)
 }
 
-func IssuedBooks(w http.ResponseWriter, request *http.Request) {
+func IssuedBooks(w http.ResponseWriter, r *http.Request) {
+	CheckRoleAdmin(w, r)
 	t := views.IssuedBooksPage()
 	requests, err := models.GetIssuedBooks()
 	if err != nil {
@@ -36,6 +39,7 @@ func IssuedBooks(w http.ResponseWriter, request *http.Request) {
 }
 
 func AddBook(w http.ResponseWriter, r *http.Request) {
+	CheckRoleAdmin(w, r)
 	switch r.Method {
 	case "GET":
 		t := views.AddBookPage()
@@ -68,17 +72,35 @@ func AddBook(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Requests(w http.ResponseWriter, request *http.Request) {
+func Requests(w http.ResponseWriter, r *http.Request) {
+	CheckRoleAdmin(w, r)
 	t := views.RequestsPage()
 	t.Execute(w, nil)
 }
 
 func ApproveAdmin(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
+	CheckRoleAdmin(w, r)
 	err := models.ApproveAdminPost(username)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error approving admin: %s", err), http.StatusInternalServerError)
 		return
 	}
 	http.Redirect(w, r, "/admin", http.StatusSeeOther)
+}
+
+func CheckRoleAdmin(w http.ResponseWriter, r *http.Request) {
+	getUser, err := models.Auth(w, r)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	userRole := getUser.Role
+	if userRole == "user" {
+		http.Redirect(w, r, "/user", http.StatusSeeOther)
+	}
+	if userRole == "admin requested" {
+		http.Redirect(w, r, "/reqAdmin", http.StatusSeeOther)
+	}
 }

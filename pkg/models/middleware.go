@@ -31,7 +31,7 @@ func Auth(w http.ResponseWriter, r *http.Request) (types.User, error) {
 	}
 
 	row = db.QueryRow("SELECT * FROM users WHERE  user_id = ?", userID)
-	if err := row.Scan(&user.UserID, &user.Username, &user.Hash, &user.Salt, &user.Role); err != nil {
+	if err := row.Scan(&user.UserID, &user.Username, &user.Role, &user.Hash, &user.Salt); err != nil {
 		fmt.Println(err)
 		return types.User{}, err
 	}
