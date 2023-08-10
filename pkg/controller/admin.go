@@ -16,6 +16,12 @@ func Admin(w http.ResponseWriter, request *http.Request) {
 
 func AdminRequests(w http.ResponseWriter, request *http.Request) {
 	t := views.AdminRequestsPage()
+	requests, err := models.GetAdminRequests()
+	fmt.Println(requests)
+	if err != nil {
+		http.Error(w, "Error getting requests", http.StatusInternalServerError)
+		return
+	}
 	t.Execute(w, nil)
 }
 
@@ -65,4 +71,14 @@ func AddBook(w http.ResponseWriter, r *http.Request) {
 func Requests(w http.ResponseWriter, request *http.Request) {
 	t := views.RequestsPage()
 	t.Execute(w, nil)
+}
+
+func ApproveAdmin(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	err := models.ApproveAdminPost(username)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error approving admin: %s", err), http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/admin", http.StatusSeeOther)
 }

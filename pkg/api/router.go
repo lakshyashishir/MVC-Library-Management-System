@@ -23,9 +23,9 @@ func Start() {
 	r.HandleFunc("/login", controller.Login).Methods("GET")
 	r.HandleFunc("/signup", controller.Signup).Methods("GET")
 
-	r.HandleFunc("/login", controller.Home).Methods("POST")
+	r.HandleFunc("/login", controller.LoginPost).Methods("POST")
 	r.HandleFunc("/logout", controller.Home).Methods("POST")
-	r.HandleFunc("/signup", controller.Home).Methods("POST")
+	r.HandleFunc("/signup", controller.Signup).Methods("POST")
 	r.HandleFunc("/addBook", controller.AddBook).Methods("POST")
 	r.HandleFunc("/user/request", controller.Home).Methods("POST")
 	r.HandleFunc("/user/return", controller.Home).Methods("POST")
@@ -33,7 +33,7 @@ func Start() {
 	r.HandleFunc("/requests/approve", controller.Home).Methods("POST")
 	r.HandleFunc("/requests/reject", controller.Home).Methods("POST")
 	r.HandleFunc("/logout", controller.Home).Methods("POST")
-	r.HandleFunc("/adminRequests/approve", controller.Home).Methods("POST")
+	r.HandleFunc("/adminRequests/approve", controller.ApproveAdmin).Methods("POST")
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("assets"))))
 
