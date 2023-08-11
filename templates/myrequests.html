@@ -17,18 +17,16 @@
                 </tr>
             </thead>
             <tbody>
-                <% for(let i = 0; i < requests.length; i++) { %>
-                <% if (requests[i].request_status == "pending") { %>
-                
+                {{ range .PendingRequests }}
                     <tr>
-                        <td><%= requests[i].book_id %></td>
-                        <td><%= requests[i].book_title %></td>
-                        <td><%= requests[i].request_status %></td>
+                        <td>{{ .BookID }}</td>
+                        <td>{{ .Title }}</td>
+                        <td>{{ .BookStatus }}</td>
                     </tr>
-                <% } %>
-                <% } %>
+                {{ end }}
             </tbody>
         </table>
+
         <h1>Rejected Requests</h1>
         <table class="table">
             <thead>
@@ -40,23 +38,21 @@
                 </tr>
             </thead>
             <tbody>
-                <% for(let i = 0; i < requests.length; i++) { %>
-                <% if (requests[i].request_status == "rejected") { %>
-                
+                {{ range .RejectedRequests }}
                     <tr>
-                        <td><%= requests[i].book_id %></td>
-                        <td><%= requests[i].book_title %></td>
-                        <td><%= requests[i].request_status %></td>
+                        <td>{{ .BookID }}</td>
+                        <td>{{ .Title }}</td>
+                        <td>{{ .BookStatus }}</td>
                         <td>
                             <form action="/user/removeRequest" method="POST">
-                              <button type="submit" name="requestId" value="<%= requests[i].request_id %>">
-                                  Clear
-                              </button>
+                                <input type="hidden" name="bookID" value="{{ .BookID }}">
+                                <button type="submit" name="requestID" value="{{ .RequestID }}">
+                                    Clear
+                                </button>
                             </form>
-                          </td>
+                        </td>
                     </tr>
-                <% } %>
-                <% } %>
+                {{ end }}
             </tbody>
         </table>
     </body>

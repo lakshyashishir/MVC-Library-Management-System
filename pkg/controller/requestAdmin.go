@@ -9,8 +9,18 @@ import (
 
 func RequestAdmin(w http.ResponseWriter, r *http.Request) {
 	CheckRoleAdminRequest(w, r)
+
+	getUser, err := models.Auth(w, r)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	username := getUser.Username
+
 	t := views.RequestAdminPage()
-	t.Execute(w, nil)
+	t.Execute(w, username)
 }
 
 func CheckRoleAdminRequest(w http.ResponseWriter, r *http.Request) {

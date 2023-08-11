@@ -22,7 +22,7 @@ func GetBook() ([]types.Book, error) {
 
 	for rows.Next() {
 		var book types.Book
-		err := rows.Scan(&book.Title, &book.Author, &book.BookStatus, &book.Quantity)
+		err := rows.Scan(&book.BookID, &book.Title, &book.Author, &book.BookStatus, &book.Quantity)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning book rows: %s", err)
 		}
@@ -97,4 +97,97 @@ func UserRemoveRequestPost(RequestID int, BookID int) {
 		fmt.Println(err)
 		return
 	}
+}
+
+func GetUserBooks(UserID int) ([]types.BookUserView, error) {
+	db, err := Connect()
+	if err != nil {
+		return nil, fmt.Errorf("error connecting to DB: %s", err)
+	}
+
+	defer db.Close()
+
+	BookList := []types.BookUserView{}
+
+	rows, err := db.Query("Select * from requests where book_status = 'approved' and user_id = ?", UserID)
+	if err != nil {
+		return nil, fmt.Errorf("error searching books: %s", err)
+	}
+
+	for rows.Next() {
+		var book types.BookUserView
+		err := rows.Scan(&book.RequestID, &book.UserID, &book.BookID, &book.BookStatus)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning book rows: %s", err)
+		}
+		book.Title, err = GetBookTitleByBookID(book.BookID)
+		if err != nil {
+			return nil, fmt.Errorf("error getting book title: %s", err)
+		}
+		BookList = append(BookList, book)
+	}
+
+	return BookList, nil
+}
+
+func GetUserRequestsPending(UserID int) ([]types.BookUserView, error) {
+	db, err := Connect()
+	if err != nil {
+		return nil, fmt.Errorf("error connecting to DB: %s", err)
+	}
+
+	defer db.Close()
+
+	BookList := []types.BookUserView{}
+
+	rows, err := db.Query("Select * from requests where book_status = 'pending' and user_id = ?", UserID)
+	if err != nil {
+		return nil, fmt.Errorf("error searching books: %s", err)
+	}
+
+	for rows.Next() {
+		var book types.BookUserView
+		err := rows.Scan(&book.RequestID, &book.UserID, &book.BookID, &book.BookStatus)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning book rows: %s", err)
+		}
+		book.Title, err = GetBookTitleByBookID(book.BookID)
+		if err != nil {
+			return nil, fmt.Errorf("error getting book title: %s", err)
+		}
+		BookList = append(BookList, book)
+	}
+
+	return BookList, nil
+}
+
+func GetUserRequestsRejected(UserID int) ([]types.BookUserView, error) {
+	db, err := Connect()
+	if err != nil {
+		return nil, fmt.Errorf("error connecting to DB: %s", err)
+	}
+
+	defer db.Close()
+
+	BookList := []types.BookUserView{}
+
+	rows, err := db.Query("Select * from requests where book_status = 'rejected' and user_id = ?", UserID)
+	if err != nil {
+		return nil, fmt.Errorf("error searching books: %s", err)
+	}
+
+	for rows.Next() {
+		var book types.BookUserView
+		err := rows.Scan(&book.RequestID, &book.UserID, &book.BookID, &book.BookStatus)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning book rows: %s", err)
+		}
+		book.Title, err = GetBookTitleByBookID(book.BookID)
+		if err != nil {
+			return nil, fmt.Errorf("error getting book title: %s", err)
+		}
+		BookList = append(BookList, book)
+	}
+
+	return BookList, nil
 }

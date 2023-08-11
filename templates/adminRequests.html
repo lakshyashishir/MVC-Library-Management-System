@@ -12,30 +12,30 @@
             <thead>
                 <tr>
                     <th>Username</th>
-                    <th></th>
-                    <th></th>
+                    <th>Approve Requests</th>
+                    <th>Reject Requests</th>
                 </tr>
             </thead>
             <tbody>
-                <% for(let i = 0; i < users.length; i++) { %>        
+                {{ range . }}        
                     <tr>
-                        <td><%= users[i].username %></td>
+                        <td>{{ .Username }}</td>
                         <td>
                             <form action="/adminRequests/approve" method="POST">
-                                <button type="submit" name="user_id" value="<%= users[i].user_id %>">
+                                <button type="submit" name="user_id" value="{{ .UserID }}">
                                     Approve
                                 </button>
                             </form>
                         </td>
                         <td>
                             <form action="/adminRequests/reject" method="POST">
-                                <button type="submit" name="user_id" value="<%= users[i].user_id %>">
+                                <button type="submit" name="user_id" value="{{ .UserID }}">
                                     Reject
                                 </button>
                             </form>
                         </td>
                     </tr>
-                <% } %>
+                {{ end }}
             </tbody>
         </table>
     </body>

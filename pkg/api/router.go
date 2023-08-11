@@ -14,7 +14,7 @@ func Start() {
 	r.HandleFunc("/user", controller.User).Methods("GET")
 	r.HandleFunc("/requests", controller.Requests).Methods("GET")
 	r.HandleFunc("/myRequests", controller.UserRequests).Methods("GET")
-	r.HandleFunc("/getbook", controller.UserViewBook).Methods("GET")
+	r.HandleFunc("/getBook", controller.UserViewBook).Methods("GET")
 	r.HandleFunc("/mybooks", controller.UserBooks).Methods("GET")
 	r.HandleFunc("/reqAdmin", controller.RequestAdmin).Methods("GET")
 	r.HandleFunc("/adminRequests", controller.AdminRequests).Methods("GET")

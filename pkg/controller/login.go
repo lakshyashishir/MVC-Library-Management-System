@@ -9,17 +9,17 @@ import (
 )
 
 func Login(w http.ResponseWriter, request *http.Request) {
-	fmt.Println("Login GET")
+	// fmt.Println("Login GET")
 	t := views.LoginPage()
 	t.Execute(w, nil)
 }
 
 func LoginPost(w http.ResponseWriter, request *http.Request) {
-	fmt.Println("Login POST")
+	// fmt.Println("Login POST")
 	username := request.FormValue("username")
 	password := request.FormValue("password")
 
-	fmt.Println(username, password)
+	// fmt.Println(username, password)
 
 	userRole, err := models.LoginPost(username, password)
 	if err != nil {
@@ -42,7 +42,7 @@ func LoginPost(w http.ResponseWriter, request *http.Request) {
 	}
 	http.SetCookie(w, &cookie)
 
-	fmt.Println("SessionID: ", sessionID)
+	// fmt.Println("SessionID: ", sessionID)
 
 	UserID, err := models.GetUserIDFromUsername(username)
 	if err != nil {
@@ -74,7 +74,7 @@ func Logout(w http.ResponseWriter, request *http.Request) {
 		http.Redirect(w, request, "/login", http.StatusSeeOther)
 		return
 	}
-	fmt.Println(cookie.Value)
+	// fmt.Println(cookie.Value)
 	err = models.DeleteSessionID(cookie.Value)
 	if err != nil {
 		fmt.Println(err)

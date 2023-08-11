@@ -69,3 +69,86 @@ func RejectBookRequestPost(requestID int) error {
 
 	return nil
 }
+
+func GetAllPendingRequests() ([]types.RequestAdminView, error) {
+	db, err := Connect()
+	if err != nil {
+		return nil, fmt.Errorf("error connecting to DB: %s", err)
+	}
+
+	defer db.Close()
+
+	var RequestList []types.RequestAdminView
+
+	rows, err := db.Query("SELECT * FROM requests WHERE book_status = 'pending'")
+	if err != nil {
+		return nil, fmt.Errorf("error searching requests: %s", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var request types.RequestAdminView
+		err := rows.Scan(&request.RequestID, &request.BookID, &request.UserID, &request.RequestStatus)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning request rows: %s", err)
+		}
+		request.Username, err = GetUsernameFromID(request.UserID)
+		if err != nil {
+			return nil, fmt.Errorf("error getting username: %s", err)
+		}
+		request.Title, err = GetBookTitleByBookID(request.BookID)
+		if err != nil {
+			return nil, fmt.Errorf("error getting book title: %s", err)
+		}
+		request.BookStatus, err = GetBookStatusByBookID(request.BookID)
+		if err != nil {
+			return nil, fmt.Errorf("error getting book author: %s", err)
+		}
+		RequestList = append(RequestList, request)
+	}
+
+	return RequestList, nil
+}
+
+func GetAllRejectedRequests() ([]types.RequestAdminView, error) {
+	db, err := Connect()
+	if err != nil {
+		return nil, fmt.Errorf("error connecting to DB: %s", err)
+	}
+
+	defer db.Close()
+
+	// fmt.Println("checking")
+
+	var RequestList []types.RequestAdminView
+
+	rows, err := db.Query("SELECT * FROM requests WHERE book_status = 'rejected'")
+	if err != nil {
+		return nil, fmt.Errorf("error searching requests: %s", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var request types.RequestAdminView
+		err := rows.Scan(&request.RequestID, &request.BookID, &request.UserID, &request.RequestStatus)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning request rows: %s", err)
+		}
+		request.Username, err = GetUsernameFromID(request.UserID)
+		if err != nil {
+			return nil, fmt.Errorf("error getting username: %s", err)
+		}
+		request.Title, err = GetBookTitleByBookID(request.BookID)
+		if err != nil {
+			return nil, fmt.Errorf("error getting book title: %s", err)
+		}
+		request.BookStatus, err = GetBookStatusByBookID(request.BookID)
+		if err != nil {
+			return nil, fmt.Errorf("error getting book author: %s", err)
+		}
+		RequestList = append(RequestList, request)
+	}
+
+	// fmt.Println(RequestList)
+	return RequestList, nil
+}

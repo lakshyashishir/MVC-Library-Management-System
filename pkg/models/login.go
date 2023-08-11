@@ -28,20 +28,3 @@ func LoginPost(username string, password string) (types.UserRole, error) {
 
 	return User.Role, nil
 }
-
-func GetUserIDFromUsername(username string) (int, error) {
-	db, err := Connect()
-	if err != nil {
-		return 0, fmt.Errorf("error connecting to DB: %s", err)
-	}
-
-	defer db.Close()
-
-	var UserID int
-	err = db.QueryRow("SELECT user_id FROM users WHERE username = ?", username).Scan(&UserID)
-	if err != nil {
-		return 0, fmt.Errorf("error searching user: %s", err)
-	}
-
-	return UserID, nil
-}

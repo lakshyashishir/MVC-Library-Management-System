@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"mvc/pkg/models"
+	"mvc/pkg/types"
 	"mvc/pkg/views"
 	"net/http"
 	"strconv"
@@ -19,39 +20,61 @@ func User(w http.ResponseWriter, r *http.Request) {
 	username := getUser.Username
 	CheckRoleUser(w, r)
 
-	fmt.Println(username)
 	t := views.UserPage()
-	t.Execute(w, nil)
+	t.Execute(w, username)
 }
 
 func UserRequests(w http.ResponseWriter, r *http.Request) {
 	CheckRoleUser(w, r)
-	switch r.Method {
-	case "GET":
-		t := views.UserRequestsPage()
-		t.Execute(w, nil)
-	case "POST":
-		bookID := r.FormValue("bookID")
-		getUser, err := models.Auth(w, r)
-		if err != nil {
-			fmt.Println(err)
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
-		}
-		UserID := getUser.UserID
-		bookIDInt, err := strconv.Atoi(bookID)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		models.UserRequestBookPost(bookIDInt, UserID)
+
+	getUser, err := models.Auth(w, r)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
+	UserID := getUser.UserID
+
+	MyPendingRequests, err := models.GetUserRequestsPending(UserID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	MyRejectedRequests, err := models.GetUserRequestsRejected(UserID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	data := struct {
+		PendingRequests  []types.BookUserView
+		RejectedRequests []types.BookUserView
+	}{
+		PendingRequests:  MyPendingRequests,
+		RejectedRequests: MyRejectedRequests,
+	}
+
+	t := views.UserRequestsPage()
+	t.Execute(w, data)
 }
 
 func UserBooks(w http.ResponseWriter, r *http.Request) {
 	CheckRoleUser(w, r)
+	getUser, err := models.Auth(w, r)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	UserID := getUser.UserID
+	UserBooks, err := models.GetUserBooks(UserID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	t := views.UserBooksPage()
-	t.Execute(w, nil)
+	t.Execute(w, UserBooks)
 }
 
 func UserViewBook(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +85,7 @@ func UserViewBook(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error getting book", http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(b)
+	// fmt.Println(b)
 	t.Execute(w, b)
 }
 
@@ -81,11 +104,13 @@ func UserRemoveRequestBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	models.UserRemoveRequestPost(requestIDInt, bookIDInt)
+
+	http.Redirect(w, r, "/user", http.StatusSeeOther)
 }
 
 func UserReturnBook(w http.ResponseWriter, r *http.Request) {
-	bookID := r.FormValue("BookID")
-	userID := r.FormValue("UserID")
+	bookID := r.FormValue("bookID")
+	userID := r.FormValue("userID")
 
 	bookIDInt, err := strconv.Atoi(bookID)
 	if err != nil {
@@ -98,6 +123,8 @@ func UserReturnBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	models.UserReturnBookPost(bookIDInt, userIDInt)
+
+	http.Redirect(w, r, "/user", http.StatusSeeOther)
 }
 
 func CheckRoleUser(w http.ResponseWriter, r *http.Request) {

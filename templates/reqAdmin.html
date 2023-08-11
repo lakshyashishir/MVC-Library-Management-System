@@ -6,7 +6,7 @@
     <title>Admin Dashboard</title>
   </head>
   <body>
-    <h1 class="welcome-user">Welcome, <%= username %>!</h1>
+    <h1 class="welcome-user">Welcome {{.}}</h1>
     <p>Your admin request is under review.</p>
     <form action="/logout" method="POST">
       <button class="logout-button" type="submit">Logout</button>

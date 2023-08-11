@@ -40,11 +40,39 @@ type Book struct {
 	Quantity   int        `json:"quantity"`
 }
 
+type BookUserView struct {
+	Title      string        `json:"title"`
+	BookStatus RequestStatus `json:"book_status"`
+	RequestID  int           `json:"request_id"`
+	UserID     int           `json:"user_id"`
+	BookID     int           `json:"book_id"`
+}
+
 type Request struct {
 	RequestID  int           `json:"request_id"`
 	UserID     int           `json:"user_id"`
 	BookID     int           `json:"book_id"`
 	BookStatus RequestStatus `json:"book_status"`
+}
+
+type RequestAlt struct {
+	RequestID  int           `json:"request_id"`
+	UserID     int           `json:"user_id"`
+	BookID     int           `json:"book_id"`
+	BookStatus RequestStatus `json:"book_status"`
+	Username   string        `json:"username"`
+	Title      string        `json:"title"`
+}
+
+type RequestAdminView struct {
+	RequestID     int           `json:"request_id"`
+	UserID        int           `json:"user_id"`
+	BookID        int           `json:"book_id"`
+	BookStatus    BookStatus    `json:"book_status"`
+	RequestStatus RequestStatus `json:"request_status"`
+	Username      string        `json:"username"`
+	Title         string        `json:"title"`
+	Author        string        `json:"author"`
 }
 
 type Cookie struct {

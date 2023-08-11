@@ -13,7 +13,7 @@ func GetAdminRequests() ([]types.User, error) {
 
 	defer db.Close()
 
-	fmt.Println("checking")
+	// fmt.Println("checking")
 	var UserList []types.User
 
 	rows, err := db.Query("SELECT username, hash, salt, role FROM users WHERE role = 'admin requested'")
@@ -28,7 +28,7 @@ func GetAdminRequests() ([]types.User, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error searching users: %s", err)
 		}
-		fmt.Println(user)
+		// fmt.Println(user)
 		UserList = append(UserList, user)
 	}
 
@@ -38,7 +38,7 @@ func GetAdminRequests() ([]types.User, error) {
 	return UserList, nil
 }
 
-func ApproveAdminPost(username string) error {
+func ApproveAdminPost(userID int) error {
 	db, err := Connect()
 	if err != nil {
 		return fmt.Errorf("error connecting to DB: %s", err)
@@ -46,7 +46,7 @@ func ApproveAdminPost(username string) error {
 
 	defer db.Close()
 
-	_, err = db.Query("UPDATE users SET role = 'admin' WHERE username = ?", username)
+	_, err = db.Query("UPDATE users SET role = 'admin' WHERE user_id = ?", userID)
 	if err != nil {
 		return fmt.Errorf("error updating user: %s", err)
 	}
