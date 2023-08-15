@@ -24,6 +24,7 @@ func Start() {
 	r.HandleFunc("/login", controller.Login).Methods("GET")
 	r.HandleFunc("/admin/login", controller.LoginAdmin).Methods("GET")
 	r.HandleFunc("/signup", controller.Signup).Methods("GET")
+	r.HandleFunc("/500", controller.InternalServerError).Methods("GET")
 
 	r.HandleFunc("/login", controller.LoginPost).Methods("POST")
 	r.HandleFunc("/logout", controller.Logout).Methods("POST")

@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 	"mvc/pkg/models"
 	"mvc/pkg/types"
 	"mvc/pkg/views"
@@ -24,7 +24,7 @@ func Signup(w http.ResponseWriter, request *http.Request) {
 		// fmt.Println(username, password, role)
 
 		if CheckUsernameExist(username) {
-			fmt.Fprintf(w, "Username already exist")
+			log.Printf("Username already exist")
 			return
 		}
 
@@ -37,7 +37,8 @@ func Signup(w http.ResponseWriter, request *http.Request) {
 
 		hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			return
 		}
 
 		// fmt.Println(string(hash))
@@ -55,13 +56,13 @@ func Signup(w http.ResponseWriter, request *http.Request) {
 
 		errSignup := models.SignupPost(user)
 		if errSignup != nil {
-			fmt.Println(errSignup)
+			log.Println(errSignup)
 			return
 		}
 
 		sessionID, err := models.GeneratSessionID()
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
@@ -76,12 +77,13 @@ func Signup(w http.ResponseWriter, request *http.Request) {
 
 		UserID, err := models.GetUserIDFromUsername(username)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			return
 		}
 
 		err = models.UpdateSessionID(UserID, sessionID)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
@@ -104,13 +106,13 @@ func Signup(w http.ResponseWriter, request *http.Request) {
 func CheckUsernameExist(username string) bool {
 	db, err := models.Connect()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	defer db.Close()
 
 	rows, err := db.Query("SELECT * FROM users WHERE username = ?", username)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	defer rows.Close()
 
@@ -120,13 +122,13 @@ func CheckUsernameExist(username string) bool {
 func CheckAdminExist() bool {
 	db, err := models.Connect()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	defer db.Close()
 
 	rows, err := db.Query("SELECT * FROM users WHERE role = 'admin'")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	defer rows.Close()
 

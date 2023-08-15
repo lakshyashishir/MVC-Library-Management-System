@@ -5,6 +5,6 @@ import (
 )
 
 func NotFoundPage() *template.Template {
-	temp := template.Must(template.ParseFiles("templates/404.html"))
+	temp := template.Must(template.ParseFiles("templates/notFound.html"))
 	return temp
 }

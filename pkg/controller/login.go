@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 	"mvc/pkg/models"
 	"mvc/pkg/views"
 	"net/http"
@@ -29,13 +29,15 @@ func LoginPost(w http.ResponseWriter, request *http.Request) {
 
 	userRole, err := models.LoginPost(username, password)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		http.Redirect(w, request, "/500", http.StatusSeeOther)
 		return
 	}
 
 	sessionID, err := models.GeneratSessionID()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		http.Redirect(w, request, "/500", http.StatusSeeOther)
 		return
 	}
 
@@ -52,13 +54,15 @@ func LoginPost(w http.ResponseWriter, request *http.Request) {
 
 	UserID, err := models.GetUserIDFromUsername(username)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		http.Redirect(w, request, "/500", http.StatusSeeOther)
 		return
 	}
 
 	err = models.UpdateSessionID(UserID, sessionID)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		http.Redirect(w, request, "/500", http.StatusSeeOther)
 		return
 	}
 
@@ -76,14 +80,16 @@ func LoginPost(w http.ResponseWriter, request *http.Request) {
 func Logout(w http.ResponseWriter, request *http.Request) {
 	cookie, err := request.Cookie("SessionID")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Redirect(w, request, "/login", http.StatusSeeOther)
 		return
 	}
 	// fmt.Println(cookie.Value)
 	err = models.DeleteSessionID(cookie.Value)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		http.Redirect(w, request, "/login", http.StatusSeeOther)
+		return
 	}
 	cookie.MaxAge = -1
 	http.SetCookie(w, cookie)

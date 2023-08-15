@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 	"mvc/pkg/models"
 	"mvc/pkg/types"
 	"mvc/pkg/views"
@@ -12,7 +12,7 @@ import (
 func User(w http.ResponseWriter, r *http.Request) {
 	getUser, err := models.Auth(w, r)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -28,7 +28,7 @@ func UserRequestBook(w http.ResponseWriter, r *http.Request) {
 	CheckRoleUser(w, r)
 	getUser, err := models.Auth(w, r)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -36,12 +36,14 @@ func UserRequestBook(w http.ResponseWriter, r *http.Request) {
 	bookId := r.FormValue("bookId")
 	bookIdInt, err := strconv.Atoi(bookId)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 	err = models.UserRequestBookPost(userId, bookIdInt)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 
@@ -53,20 +55,23 @@ func UserRequests(w http.ResponseWriter, r *http.Request) {
 
 	getUser, err := models.Auth(w, r)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 	userId := getUser.UserID
 
 	MyPendingRequests, err := models.GetUserRequestsPending(userId)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 
 	MyRejectedRequests, err := models.GetUserRequestsRejected(userId)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 
@@ -86,14 +91,15 @@ func UserBooks(w http.ResponseWriter, r *http.Request) {
 	CheckRoleUser(w, r)
 	getUser, err := models.Auth(w, r)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 	userId := getUser.UserID
 	UserBooks, err := models.GetUserBooks(userId)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 
@@ -105,7 +111,8 @@ func UserViewBook(w http.ResponseWriter, r *http.Request) {
 	t := views.UserViewBookPage()
 	b, err := models.GetBook()
 	if err != nil {
-		http.Error(w, "Error getting book", http.StatusInternalServerError)
+		log.Print(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 	// fmt.Println(b)
@@ -117,12 +124,14 @@ func UserRemoveRequestBook(w http.ResponseWriter, r *http.Request) {
 
 	requestIDInt, err := strconv.Atoi(requestID)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 	bookId, err := models.GetBookIdByRequestId(requestIDInt)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 
@@ -136,13 +145,15 @@ func UserReturnBook(w http.ResponseWriter, r *http.Request) {
 
 	bookIdInt, err := strconv.Atoi(bookId)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 
 	userIdInt, err := models.GetUserIdByBookId(bookIdInt)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 	models.UserReturnBookPost(bookIdInt, userIdInt)
@@ -153,7 +164,7 @@ func UserReturnBook(w http.ResponseWriter, r *http.Request) {
 func CheckRoleUser(w http.ResponseWriter, r *http.Request) {
 	getUser, err := models.Auth(w, r)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}

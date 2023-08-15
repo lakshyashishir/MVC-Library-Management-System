@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 	"mvc/pkg/models"
 	"mvc/pkg/views"
 	"net/http"
@@ -12,7 +12,7 @@ func RequestAdmin(w http.ResponseWriter, r *http.Request) {
 
 	getUser, err := models.Auth(w, r)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -26,7 +26,7 @@ func RequestAdmin(w http.ResponseWriter, r *http.Request) {
 func CheckRoleAdminRequest(w http.ResponseWriter, r *http.Request) {
 	getUser, err := models.Auth(w, r)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
