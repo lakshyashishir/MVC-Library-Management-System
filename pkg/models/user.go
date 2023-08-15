@@ -33,48 +33,65 @@ func GetBook() ([]types.Book, error) {
 	return BookList, nil
 }
 
-func UserReturnBookPost(BookID int, UserID int) {
+func UserReturnBookPost(BookID int, UserID int) error {
 	db, err := Connect()
 	if err != nil {
 		fmt.Println(err)
-		return
+		return err
 	}
 
 	defer db.Close()
 
-	_, err = db.Exec("UPDATE books SET status = 'available' WHERE book_id = ?", BookID)
+	rows, err := db.Query("Select * from books where book_id = ? AND status = 'available'", BookID)
 	if err != nil {
-		fmt.Println(err)
-		return
+		err = fmt.Errorf("error checking book status: %s", err)
+		return err
+	}
+	if rows == nil {
+		_, err = db.Query("UPDATE books SET status = 'available' WHERE book_id = ?", BookID)
+		if err != nil {
+			return fmt.Errorf("error updating book status: %s", err)
+		}
+	}
+
+	for rows.Next() {
+		var book types.Book
+		err := rows.Scan(&book.BookID, &book.Title, &book.Author, &book.BookStatus, &book.Quantity)
+		if err != nil {
+			return fmt.Errorf("error scanning book rows: %s", err)
+		}
+
+		_, err = db.Query("UPDATE books SET quantity = quantity + 1 WHERE book_id = ?", BookID)
+		if err != nil {
+			return fmt.Errorf("error updating book quantity: %s", err)
+		}
 	}
 
 	_, err = db.Exec("DELETE from requests where book_id = ? AND user_id = ?", BookID, UserID)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return err
 	}
+
+	return nil
 }
 
-func UserRequestBookPost(BookID int, UserID int) {
+func UserRequestBookPost(UserID int, BookID int) error {
 	db, err := Connect()
 	if err != nil {
 		fmt.Println(err)
-		return
+		return err
 	}
 
 	defer db.Close()
 
-	_, err = db.Exec("UPDATE books SET status = 'requested' WHERE book_id = ?", BookID)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
 	_, err = db.Exec("INSERT INTO requests (user_id, book_id, book_status) VALUES (?, ?, 'pending')", UserID, BookID)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return err
 	}
+
+	return nil
 }
 
 func UserRemoveRequestPost(RequestID int, BookID int) {

@@ -14,6 +14,12 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	t.Execute(w, nil)
 }
 
+func LoginAdmin(w http.ResponseWriter, request *http.Request) {
+	// fmt.Println("Login GET")
+	t := views.LoginAdminPage()
+	t.Execute(w, nil)
+}
+
 func LoginPost(w http.ResponseWriter, request *http.Request) {
 	// fmt.Println("Login POST")
 	username := request.FormValue("username")

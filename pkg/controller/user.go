@@ -24,6 +24,30 @@ func User(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, username)
 }
 
+func UserRequestBook(w http.ResponseWriter, r *http.Request) {
+	CheckRoleUser(w, r)
+	getUser, err := models.Auth(w, r)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	UserID := getUser.UserID
+	bookId := r.FormValue("bookId")
+	bookIdInt, err := strconv.Atoi(bookId)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = models.UserRequestBookPost(UserID, bookIdInt)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	http.Redirect(w, r, "/user", http.StatusSeeOther)
+}
+
 func UserRequests(w http.ResponseWriter, r *http.Request) {
 	CheckRoleUser(w, r)
 
@@ -78,7 +102,6 @@ func UserBooks(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserViewBook(w http.ResponseWriter, r *http.Request) {
-	CheckRoleUser(w, r)
 	t := views.UserViewBookPage()
 	b, err := models.GetBook()
 	if err != nil {
@@ -91,28 +114,28 @@ func UserViewBook(w http.ResponseWriter, r *http.Request) {
 
 func UserRemoveRequestBook(w http.ResponseWriter, r *http.Request) {
 	requestID := r.FormValue("requestID")
-	bookID := r.FormValue("bookID")
+	bookId := r.FormValue("bookId")
 
 	requestIDInt, err := strconv.Atoi(requestID)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	bookIDInt, err := strconv.Atoi(bookID)
+	bookIdInt, err := strconv.Atoi(bookId)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	models.UserRemoveRequestPost(requestIDInt, bookIDInt)
+	models.UserRemoveRequestPost(requestIDInt, bookIdInt)
 
 	http.Redirect(w, r, "/user", http.StatusSeeOther)
 }
 
 func UserReturnBook(w http.ResponseWriter, r *http.Request) {
-	bookID := r.FormValue("bookID")
+	bookId := r.FormValue("bookId")
 	userID := r.FormValue("userID")
 
-	bookIDInt, err := strconv.Atoi(bookID)
+	bookIdInt, err := strconv.Atoi(bookId)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -122,7 +145,7 @@ func UserReturnBook(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	models.UserReturnBookPost(bookIDInt, userIDInt)
+	models.UserReturnBookPost(bookIdInt, userIDInt)
 
 	http.Redirect(w, r, "/user", http.StatusSeeOther)
 }

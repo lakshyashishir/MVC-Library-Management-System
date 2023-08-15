@@ -80,16 +80,18 @@ func AddBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func Requests(w http.ResponseWriter, r *http.Request) {
-	CheckRoleAdmin(w, r)
+	// CheckRoleAdmin(w, r)
 	pendingRequests, err := models.GetAllPendingRequests()
 	if err != nil {
 		http.Error(w, "Error getting requests", http.StatusInternalServerError)
+		fmt.Println(err)
 		return
 	}
 
 	rejectedRequests, err := models.GetAllRejectedRequests()
 	if err != nil {
 		http.Error(w, "Error getting requests", http.StatusInternalServerError)
+		fmt.Println(err)
 		return
 	}
 
@@ -125,7 +127,7 @@ func ApproveAdmin(w http.ResponseWriter, r *http.Request) {
 
 func ApproveBookRequest(w http.ResponseWriter, r *http.Request) {
 	requestIDStr := r.FormValue("requestID")
-	bookIDStr := r.FormValue("bookID")
+	bookIdStr := r.FormValue("bookId")
 
 	requestID, err := strconv.Atoi(requestIDStr)
 	if err != nil {
@@ -133,14 +135,14 @@ func ApproveBookRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bookID, err := strconv.Atoi(bookIDStr)
+	bookId, err := strconv.Atoi(bookIdStr)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error converting bookID to integer: %s", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error converting bookId to integer: %s", err), http.StatusInternalServerError)
 		return
 	}
 
 	CheckRoleAdmin(w, r)
-	err = models.ApproveBookRequestPost(requestID, bookID)
+	err = models.ApproveBookRequestPost(requestID, bookId)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error approving book request: %s", err), http.StatusInternalServerError)
 		return
@@ -166,6 +168,42 @@ func RejectBookRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/requests", http.StatusSeeOther)
+}
+
+func AdminViewBook(w http.ResponseWriter, r *http.Request) {
+	t := views.AdminViewBookPage()
+	b, err := models.GetBook()
+	if err != nil {
+		http.Error(w, "Error getting book", http.StatusInternalServerError)
+		return
+	}
+	// fmt.Println(b)
+	t.Execute(w, b)
+}
+
+func DeleteBook(w http.ResponseWriter, r *http.Request) {
+	bookId := r.FormValue("bookId")
+	bookIdInt, err := strconv.Atoi(bookId)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error converting bookId to integer: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	err = models.DeleteBookPost(bookIdInt)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error deleting book: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	CheckRoleAdmin(w, r)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error deleting book: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/admin", http.StatusSeeOther)
 }
 
 func CheckRoleAdmin(w http.ResponseWriter, r *http.Request) {

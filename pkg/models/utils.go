@@ -13,14 +13,13 @@ func GetBookTitleByBookID(bookID int) (string, error) {
 
 	defer db.Close()
 
-	var book types.Book
-
-	err = db.QueryRow("SELECT * FROM books WHERE book_id = ?", bookID).Scan(&book.BookID, &book.Title, &book.Author, &book.BookStatus, &book.Quantity)
+	var Title string
+	err = db.QueryRow("SELECT title FROM books WHERE book_id = ?", bookID).Scan(&Title)
 	if err != nil {
-		return "", fmt.Errorf("error scanning book rows: %s", err)
+		return "", fmt.Errorf("error searching book: %s", err)
 	}
 
-	return book.Title, nil
+	return Title, nil
 }
 
 func GetUserIDFromUsername(username string) (int, error) {

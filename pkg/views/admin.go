@@ -24,6 +24,11 @@ func AddBookPage() *template.Template {
 	return temp
 }
 
+func AdminViewBookPage() *template.Template {
+	temp := template.Must(template.ParseFiles("templates/adminBooks.html"))
+	return temp
+}
+
 func RequestsPage() *template.Template {
 	temp := template.Must(template.ParseFiles("templates/requests.html"))
 	return temp
