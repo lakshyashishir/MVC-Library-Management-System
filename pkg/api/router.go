@@ -35,6 +35,7 @@ func Start() {
 	r.HandleFunc("/requests/approve", controller.ApproveBookRequest).Methods("POST")
 	r.HandleFunc("/requests/reject", controller.RejectBookRequest).Methods("POST")
 	r.HandleFunc("/adminRequests/approve", controller.ApproveAdmin).Methods("POST")
+	r.HandleFunc("/adminRequests/reject", controller.ApproveAdmin).Methods("POST")
 	r.HandleFunc("/deleteBook", controller.DeleteBook).Methods("POST")
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("assets"))))

@@ -80,7 +80,7 @@ func AddBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func Requests(w http.ResponseWriter, r *http.Request) {
-	// CheckRoleAdmin(w, r)
+	CheckRoleAdmin(w, r)
 	pendingRequests, err := models.GetAllPendingRequests()
 	if err != nil {
 		http.Error(w, "Error getting requests", http.StatusInternalServerError)
@@ -90,8 +90,7 @@ func Requests(w http.ResponseWriter, r *http.Request) {
 
 	rejectedRequests, err := models.GetAllRejectedRequests()
 	if err != nil {
-		http.Error(w, "Error getting requests", http.StatusInternalServerError)
-		fmt.Println(err)
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 
@@ -108,18 +107,36 @@ func Requests(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApproveAdmin(w http.ResponseWriter, r *http.Request) {
-	userID := r.FormValue("userID")
-	userIDInt, err := strconv.Atoi(userID)
+	userId := r.FormValue("userId")
+	userIdInt, err := strconv.Atoi(userId)
 
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error converting userID to integer: %s", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error converting userId to integer: %s", err), http.StatusInternalServerError)
 		return
 	}
 
 	CheckRoleAdmin(w, r)
-	err = models.ApproveAdminPost(userIDInt)
+	err = models.ApproveAdminPost(userIdInt)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error approving admin: %s", err), http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/admin", http.StatusSeeOther)
+}
+
+func RejectAdmin(w http.ResponseWriter, r *http.Request) {
+	userId := r.FormValue("userId")
+	userIdInt, err := strconv.Atoi(userId)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error converting userId to integer: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	CheckRoleAdmin(w, r)
+	err = models.RejectAdminPost(userIdInt)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error rejecting admin: %s", err), http.StatusInternalServerError)
 		return
 	}
 	http.Redirect(w, r, "/admin", http.StatusSeeOther)

@@ -23,14 +23,14 @@
                         <td>{{ .Username }}</td>
                         <td>
                             <form action="/adminRequests/approve" method="POST">
-                                <button type="submit" name="user_id" value="{{ .UserID }}">
+                                <button type="submit" name="userId" value="{{ .UserID }}">
                                     Approve
                                 </button>
                             </form>
                         </td>
                         <td>
                             <form action="/adminRequests/reject" method="POST">
-                                <button type="submit" name="user_id" value="{{ .UserID }}">
+                                <button type="submit" name="userId" value="{{ .UserID }}">
                                     Reject
                                 </button>
                             </form>
