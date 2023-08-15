@@ -31,6 +31,7 @@
                         <td>{{ .Username }}</td>
                         <td>
                             <form action="/requests/approve" method="POST">
+                                <input type="hidden" name="bookId" value="{{ .BookID }}"/>
                                 <button type="submit" name="requestId" value="{{ .RequestID }}">
                                     Approve
                                 </button>

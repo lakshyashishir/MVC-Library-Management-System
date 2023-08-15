@@ -23,9 +23,7 @@
                         <td>{{ .BookStatus}}</td>
                         <td>
                             <form action="/user/return" method="POST">
-                                <input type="hidden" name="userID" value="{{ .UserID }}">
-                                <input type="hidden" name="bookI" value="{{ .BookID }}">
-                                <button type="submit">
+                                <button type="submit" name="bookId" value="{{ .BookID }}">
                                     Return
                                 </button>
                             </form>

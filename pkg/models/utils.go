@@ -73,3 +73,37 @@ func GetBookStatusByBookID(bookID int) (types.BookStatus, error) {
 
 	return book.BookStatus, nil
 }
+
+func GetBookIdByRequestId(RequestID int) (int, error) {
+	db, err := Connect()
+	if err != nil {
+		return 0, fmt.Errorf("error connecting to DB: %s", err)
+	}
+
+	defer db.Close()
+
+	var BookID int
+	err = db.QueryRow("SELECT book_id FROM requests WHERE request_id = ?", RequestID).Scan(&BookID)
+	if err != nil {
+		return 0, fmt.Errorf("error searching book: %s", err)
+	}
+
+	return BookID, nil
+}
+
+func GetUserIdByBookId(BookID int) (int, error) {
+	db, err := Connect()
+	if err != nil {
+		return 0, fmt.Errorf("error connecting to DB: %s", err)
+	}
+
+	defer db.Close()
+
+	var UserID int
+	err = db.QueryRow("SELECT user_id FROM requests WHERE book_id = ?", BookID).Scan(&UserID)
+	if err != nil {
+		return 0, fmt.Errorf("error searching user: %s", err)
+	}
+
+	return UserID, nil
+}

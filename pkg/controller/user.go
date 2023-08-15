@@ -32,14 +32,14 @@ func UserRequestBook(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
-	UserID := getUser.UserID
+	userId := getUser.UserID
 	bookId := r.FormValue("bookId")
 	bookIdInt, err := strconv.Atoi(bookId)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	err = models.UserRequestBookPost(UserID, bookIdInt)
+	err = models.UserRequestBookPost(userId, bookIdInt)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -56,15 +56,15 @@ func UserRequests(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	UserID := getUser.UserID
+	userId := getUser.UserID
 
-	MyPendingRequests, err := models.GetUserRequestsPending(UserID)
+	MyPendingRequests, err := models.GetUserRequestsPending(userId)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	MyRejectedRequests, err := models.GetUserRequestsRejected(UserID)
+	MyRejectedRequests, err := models.GetUserRequestsRejected(userId)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -90,8 +90,8 @@ func UserBooks(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
-	UserID := getUser.UserID
-	UserBooks, err := models.GetUserBooks(UserID)
+	userId := getUser.UserID
+	UserBooks, err := models.GetUserBooks(userId)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -114,38 +114,38 @@ func UserViewBook(w http.ResponseWriter, r *http.Request) {
 
 func UserRemoveRequestBook(w http.ResponseWriter, r *http.Request) {
 	requestID := r.FormValue("requestID")
-	bookId := r.FormValue("bookId")
 
 	requestIDInt, err := strconv.Atoi(requestID)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	bookIdInt, err := strconv.Atoi(bookId)
+	bookId, err := models.GetBookIdByRequestId(requestIDInt)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	models.UserRemoveRequestPost(requestIDInt, bookIdInt)
+
+	models.UserRemoveRequestPost(requestIDInt, bookId)
 
 	http.Redirect(w, r, "/user", http.StatusSeeOther)
 }
 
 func UserReturnBook(w http.ResponseWriter, r *http.Request) {
 	bookId := r.FormValue("bookId")
-	userID := r.FormValue("userID")
 
 	bookIdInt, err := strconv.Atoi(bookId)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	userIDInt, err := strconv.Atoi(userID)
+
+	userIdInt, err := models.GetUserIdByBookId(bookIdInt)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	models.UserReturnBookPost(bookIdInt, userIDInt)
+	models.UserReturnBookPost(bookIdInt, userIdInt)
 
 	http.Redirect(w, r, "/user", http.StatusSeeOther)
 }

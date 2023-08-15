@@ -58,7 +58,7 @@ func ApproveBookRequestPost(requestID int, bookID int) error {
 			return fmt.Errorf("error scanning book rows: %s", err)
 		}
 
-		_, err = db.Query("UPDATE requests SET status = 'approved' WHERE book_id = ? and request_id", bookID, requestID)
+		_, err = db.Query("UPDATE requests SET book_status = 'approved' WHERE book_id = ? and request_id = ?", bookID, requestID)
 		if err != nil {
 			return fmt.Errorf("error updating request status: %s", err)
 		}
@@ -147,8 +147,6 @@ func GetAllRejectedRequests() ([]types.RequestAdminView, error) {
 
 	defer db.Close()
 
-	// fmt.Println("checking")
-
 	var RequestList []types.RequestAdminView
 
 	rows, err := db.Query("SELECT * FROM requests WHERE book_status = 'rejected'")
@@ -159,10 +157,13 @@ func GetAllRejectedRequests() ([]types.RequestAdminView, error) {
 
 	for rows.Next() {
 		var request types.RequestAdminView
-		err := rows.Scan(&request.RequestID, &request.BookID, &request.UserID, &request.RequestStatus)
+		err := rows.Scan(&request.RequestID, &request.UserID, &request.BookID, &request.RequestStatus)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning request rows: %s", err)
 		}
+
+		// fmt.Println(request.BookID)
+
 		request.Username, err = GetUsernameFromID(request.UserID)
 		if err != nil {
 			return nil, fmt.Errorf("error getting username: %s", err)
@@ -178,6 +179,5 @@ func GetAllRejectedRequests() ([]types.RequestAdminView, error) {
 		RequestList = append(RequestList, request)
 	}
 
-	// fmt.Println(RequestList)
 	return RequestList, nil
 }

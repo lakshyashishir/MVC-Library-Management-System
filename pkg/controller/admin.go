@@ -90,7 +90,8 @@ func Requests(w http.ResponseWriter, r *http.Request) {
 
 	rejectedRequests, err := models.GetAllRejectedRequests()
 	if err != nil {
-		http.Redirect(w, r, "/500", http.StatusSeeOther)
+		// http.Redirect(w, r, "/500", http.StatusSeeOther)
+		fmt.Println(err)
 		return
 	}
 
@@ -143,23 +144,22 @@ func RejectAdmin(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApproveBookRequest(w http.ResponseWriter, r *http.Request) {
-	requestIDStr := r.FormValue("requestID")
-	bookIdStr := r.FormValue("bookId")
+	requestIdStr := r.FormValue("requestId")
 
-	requestID, err := strconv.Atoi(requestIDStr)
+	requestId, err := strconv.Atoi(requestIdStr)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error converting requestID to integer: %s", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error converting requestId to integer: %s", err), http.StatusInternalServerError)
 		return
 	}
 
-	bookId, err := strconv.Atoi(bookIdStr)
+	bookId, err := models.GetBookIdByRequestId(requestId)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error converting bookId to integer: %s", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error getting bookId: %s", err), http.StatusInternalServerError)
 		return
 	}
 
 	CheckRoleAdmin(w, r)
-	err = models.ApproveBookRequestPost(requestID, bookId)
+	err = models.ApproveBookRequestPost(requestId, bookId)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error approving book request: %s", err), http.StatusInternalServerError)
 		return
@@ -169,16 +169,16 @@ func ApproveBookRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func RejectBookRequest(w http.ResponseWriter, r *http.Request) {
-	requestIDStr := r.FormValue("requestID")
+	requestIdStr := r.FormValue("requestId")
 
-	requestID, err := strconv.Atoi(requestIDStr)
+	requestId, err := strconv.Atoi(requestIdStr)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error converting requestID to integer: %s", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error converting requestId to integer: %s", err), http.StatusInternalServerError)
 		return
 	}
 
 	CheckRoleAdmin(w, r)
-	err = models.RejectBookRequestPost(requestID)
+	err = models.RejectBookRequestPost(requestId)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error rejecting book request: %s", err), http.StatusInternalServerError)
 		return

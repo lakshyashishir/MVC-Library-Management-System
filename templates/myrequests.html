@@ -46,7 +46,6 @@
                         <td>{{ .BookStatus }}</td>
                         <td>
                             <form action="/user/removeRequest" method="POST">
-                                <input type="hidden" name="bookID" value="{{ .BookID }}">
                                 <button type="submit" name="requestID" value="{{ .RequestID }}">
                                     Clear
                                 </button>
