@@ -25,7 +25,14 @@ func Admin(w http.ResponseWriter, r *http.Request) {
 func AdminRequests(w http.ResponseWriter, r *http.Request) {
 	CheckRoleAdmin(w, r)
 	t := views.AdminRequestsPage()
-	requests, err := models.GetAdminRequests()
+	db, err := models.Connect()
+	if err != nil {
+		http.Redirect(w, r, "/500", http.StatusSeeOther)
+		log.Println(err)
+		return
+	}
+	defer db.Close()
+	requests, err := models.GetAdminRequests(db)
 	if err != nil {
 		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		log.Println(err)

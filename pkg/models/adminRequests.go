@@ -1,19 +1,12 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 	"mvc/pkg/types"
 )
 
-func GetAdminRequests() ([]types.User, error) {
-	db, err := Connect()
-	if err != nil {
-		return nil, fmt.Errorf("error connecting to DB: %s", err)
-	}
-
-	defer db.Close()
-
-	// fmt.Println("checking")
+func GetAdminRequests(db *sql.DB) ([]types.User, error) {
 	var UserList []types.User
 
 	rows, err := db.Query("SELECT user_id,username, hash, salt, role FROM users WHERE role = 'admin requested'")
