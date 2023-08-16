@@ -7,7 +7,7 @@ import (
 )
 
 func GetAdminRequests(db *sql.DB) ([]types.User, error) {
-	var UserList []types.User
+	var userList []types.User
 
 	rows, err := db.Query("SELECT user_id,username, hash, salt, role FROM users WHERE role = 'admin requested'")
 	if err != nil {
@@ -21,17 +21,12 @@ func GetAdminRequests(db *sql.DB) ([]types.User, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error searching users: %s", err)
 		}
-		// fmt.Println(user)
-		UserList = append(UserList, user)
+		userList = append(userList, user)
 	}
-
-	// fmt.Println(UserList)
-	// fmt.Println("checking")
-
-	return UserList, nil
+	return userList, nil
 }
 
-func ApproveAdminPost(userID int) error {
+func ApproveAdminPost(userId int) error {
 	db, err := Connect()
 	if err != nil {
 		return fmt.Errorf("error connecting to DB: %s", err)
@@ -39,7 +34,7 @@ func ApproveAdminPost(userID int) error {
 
 	defer db.Close()
 
-	_, err = db.Query("UPDATE users SET role = 'admin' WHERE user_id = ?", userID)
+	_, err = db.Query("UPDATE users SET role = 'admin' WHERE user_id = ?", userId)
 	if err != nil {
 		return fmt.Errorf("error updating user: %s", err)
 	}
@@ -47,7 +42,7 @@ func ApproveAdminPost(userID int) error {
 	return nil
 }
 
-func RejectAdminPost(userID int) error {
+func RejectAdminPost(userId int) error {
 	db, err := Connect()
 	if err != nil {
 		return fmt.Errorf("error connecting to DB: %s", err)
@@ -55,7 +50,7 @@ func RejectAdminPost(userID int) error {
 
 	defer db.Close()
 
-	_, err = db.Query("Delete from users WHERE user_id = ?", userID)
+	_, err = db.Query("Delete from users WHERE user_id = ?", userId)
 	if err != nil {
 		return fmt.Errorf("error updating user: %s", err)
 	}

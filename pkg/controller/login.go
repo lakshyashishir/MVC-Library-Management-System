@@ -9,23 +9,18 @@ import (
 )
 
 func Login(w http.ResponseWriter, request *http.Request) {
-	// fmt.Println("Login GET")
 	t := views.LoginPage()
 	t.Execute(w, nil)
 }
 
 func LoginAdmin(w http.ResponseWriter, request *http.Request) {
-	// fmt.Println("Login GET")
 	t := views.LoginAdminPage()
 	t.Execute(w, nil)
 }
 
 func LoginPost(w http.ResponseWriter, request *http.Request) {
-	// fmt.Println("Login POST")
 	username := request.FormValue("username")
 	password := request.FormValue("password")
-
-	// fmt.Println(username, password)
 
 	userRole, err := models.LoginPost(username, password)
 	if err != nil {
@@ -42,15 +37,13 @@ func LoginPost(w http.ResponseWriter, request *http.Request) {
 	}
 
 	cookie := http.Cookie{
-		Name:     "SessionID",
+		Name:     "sessionId",
 		Value:    sessionID,
 		Expires:  time.Now().Add(48 * time.Hour),
 		HttpOnly: true,
 		Path:     "/",
 	}
 	http.SetCookie(w, &cookie)
-
-	// fmt.Println("SessionID: ", sessionID)
 
 	UserID, err := models.GetUserIDFromUsername(username)
 	if err != nil {
@@ -78,13 +71,12 @@ func LoginPost(w http.ResponseWriter, request *http.Request) {
 }
 
 func Logout(w http.ResponseWriter, request *http.Request) {
-	cookie, err := request.Cookie("SessionID")
+	cookie, err := request.Cookie("sessionId")
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, request, "/login", http.StatusSeeOther)
 		return
 	}
-	// fmt.Println(cookie.Value)
 	err = models.DeleteSessionID(cookie.Value)
 	if err != nil {
 		log.Println(err)

@@ -13,7 +13,7 @@ func GetIssuedBooks() ([]types.RequestAlt, error) {
 
 	defer db.Close()
 
-	Issuedlist := []types.RequestAlt{}
+	issuedList := []types.RequestAlt{}
 
 	rows, err := db.Query("SELECT * FROM requests where book_status = 'approved'")
 	if err != nil {
@@ -34,10 +34,8 @@ func GetIssuedBooks() ([]types.RequestAlt, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error getting book title: %s", err)
 		}
-		Issuedlist = append(Issuedlist, requests)
+		issuedList = append(issuedList, requests)
 	}
 
-	// log.Println(Issuedlist)
-
-	return Issuedlist, nil
+	return issuedList, nil
 }

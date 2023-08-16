@@ -61,14 +61,14 @@ func UserRequests(w http.ResponseWriter, r *http.Request) {
 	}
 	userId := getUser.UserID
 
-	MyPendingRequests, err := models.GetUserRequestsPending(userId)
+	myPendingRequests, err := models.GetUserRequestsPending(userId)
 	if err != nil {
 		log.Print(err)
 		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 
-	MyRejectedRequests, err := models.GetUserRequestsRejected(userId)
+	myRejectedRequests, err := models.GetUserRequestsRejected(userId)
 	if err != nil {
 		log.Print(err)
 		http.Redirect(w, r, "/500", http.StatusSeeOther)
@@ -79,8 +79,8 @@ func UserRequests(w http.ResponseWriter, r *http.Request) {
 		PendingRequests  []types.BookUserView
 		RejectedRequests []types.BookUserView
 	}{
-		PendingRequests:  MyPendingRequests,
-		RejectedRequests: MyRejectedRequests,
+		PendingRequests:  myPendingRequests,
+		RejectedRequests: myRejectedRequests,
 	}
 
 	t := views.UserRequestsPage()
@@ -96,7 +96,7 @@ func UserBooks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userId := getUser.UserID
-	UserBooks, err := models.GetUserBooks(userId)
+	userBooks, err := models.GetUserBooks(userId)
 	if err != nil {
 		log.Print(err)
 		http.Redirect(w, r, "/500", http.StatusSeeOther)
@@ -104,7 +104,7 @@ func UserBooks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := views.UserBooksPage()
-	t.Execute(w, UserBooks)
+	t.Execute(w, userBooks)
 }
 
 func UserViewBook(w http.ResponseWriter, r *http.Request) {
@@ -115,27 +115,26 @@ func UserViewBook(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
-	// fmt.Println(b)
 	t.Execute(w, b)
 }
 
 func UserRemoveRequestBook(w http.ResponseWriter, r *http.Request) {
-	requestID := r.FormValue("requestID")
+	requestId := r.FormValue("requestId")
 
-	requestIDInt, err := strconv.Atoi(requestID)
+	requestIdInt, err := strconv.Atoi(requestId)
 	if err != nil {
 		log.Print(err)
 		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
-	bookId, err := models.GetBookIdByRequestId(requestIDInt)
+	bookId, err := models.GetBookIdByRequestId(requestIdInt)
 	if err != nil {
 		log.Print(err)
 		http.Redirect(w, r, "/500", http.StatusSeeOther)
 		return
 	}
 
-	models.UserRemoveRequestPost(requestIDInt, bookId)
+	models.UserRemoveRequestPost(requestIdInt, bookId)
 
 	http.Redirect(w, r, "/user", http.StatusSeeOther)
 }
@@ -173,6 +172,6 @@ func CheckRoleUser(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/admin", http.StatusSeeOther)
 	}
 	if userRole == "admin requested" {
-		http.Redirect(w, r, "/reqAdmin", http.StatusSeeOther)
+		http.Redirect(w, r, "/pendingAdminApproval", http.StatusSeeOther)
 	}
 }

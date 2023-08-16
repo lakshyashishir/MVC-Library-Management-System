@@ -13,7 +13,7 @@ func GetBook() ([]types.Book, error) {
 
 	defer db.Close()
 
-	BookList := []types.Book{}
+	bookList := []types.Book{}
 
 	rows, err := db.Query("SELECT * FROM books")
 	if err != nil {
@@ -27,10 +27,10 @@ func GetBook() ([]types.Book, error) {
 			return nil, fmt.Errorf("error scanning book rows: %s", err)
 		}
 
-		BookList = append(BookList, book)
+		bookList = append(bookList, book)
 	}
 
-	return BookList, nil
+	return bookList, nil
 }
 
 func UserReturnBookPost(BookID int, UserID int) error {
@@ -124,7 +124,7 @@ func GetUserBooks(UserID int) ([]types.BookUserView, error) {
 
 	defer db.Close()
 
-	BookList := []types.BookUserView{}
+	bookList := []types.BookUserView{}
 
 	rows, err := db.Query("Select * from requests where book_status = 'approved' and user_id = ?", UserID)
 	if err != nil {
@@ -141,10 +141,10 @@ func GetUserBooks(UserID int) ([]types.BookUserView, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error getting book title: %s", err)
 		}
-		BookList = append(BookList, book)
+		bookList = append(bookList, book)
 	}
 
-	return BookList, nil
+	return bookList, nil
 }
 
 func GetUserRequestsPending(UserID int) ([]types.BookUserView, error) {
@@ -155,7 +155,7 @@ func GetUserRequestsPending(UserID int) ([]types.BookUserView, error) {
 
 	defer db.Close()
 
-	BookList := []types.BookUserView{}
+	bookList := []types.BookUserView{}
 
 	rows, err := db.Query("Select * from requests where book_status = 'pending' and user_id = ?", UserID)
 	if err != nil {
@@ -172,10 +172,10 @@ func GetUserRequestsPending(UserID int) ([]types.BookUserView, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error getting book title: %s", err)
 		}
-		BookList = append(BookList, book)
+		bookList = append(bookList, book)
 	}
 
-	return BookList, nil
+	return bookList, nil
 }
 
 func GetUserRequestsRejected(UserID int) ([]types.BookUserView, error) {
@@ -186,7 +186,7 @@ func GetUserRequestsRejected(UserID int) ([]types.BookUserView, error) {
 
 	defer db.Close()
 
-	BookList := []types.BookUserView{}
+	bookList := []types.BookUserView{}
 
 	rows, err := db.Query("Select * from requests where book_status = 'rejected' and user_id = ?", UserID)
 	if err != nil {
@@ -203,8 +203,8 @@ func GetUserRequestsRejected(UserID int) ([]types.BookUserView, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error getting book title: %s", err)
 		}
-		BookList = append(BookList, book)
+		bookList = append(bookList, book)
 	}
 
-	return BookList, nil
+	return bookList, nil
 }

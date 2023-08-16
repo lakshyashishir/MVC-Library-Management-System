@@ -14,7 +14,7 @@ func GeneratSessionID() (string, error) {
 	return fmt.Sprintf("%x", b), nil
 }
 
-func UpdateSessionID(UserID int, sessionID string) error {
+func UpdateSessionID(userId int, sessionId string) error {
 	db, err := Connect()
 	if err != nil {
 		return fmt.Errorf("error connecting to DB: %s", err)
@@ -22,20 +22,20 @@ func UpdateSessionID(UserID int, sessionID string) error {
 
 	defer db.Close()
 
-	_, err = db.Query("DELETE FROM cookies WHERE userId = ?", UserID)
+	_, err = db.Query("DELETE FROM cookies WHERE userId = ?", userId)
 	if err != nil {
-		return fmt.Errorf("error updating sessionID: %s", err)
+		return fmt.Errorf("error updating sessionId: %s", err)
 	}
 
-	_, err = db.Query("INSERT INTO cookies (sessionId, userId) VALUES (?, ?)", sessionID, UserID)
+	_, err = db.Query("INSERT INTO cookies (sessionId, userId) VALUES (?, ?)", sessionId, userId)
 	if err != nil {
-		return fmt.Errorf("error updating sessionID: %s", err)
+		return fmt.Errorf("error updating sessionId: %s", err)
 	}
 
 	return nil
 }
 
-func DeleteSessionID(session_id string) error {
+func DeleteSessionID(sessionId string) error {
 	db, err := Connect()
 	if err != nil {
 		return fmt.Errorf("error connecting to DB: %s", err)
@@ -43,7 +43,7 @@ func DeleteSessionID(session_id string) error {
 
 	defer db.Close()
 
-	_, err = db.Query("DELETE FROM cookies WHERE sessionId = ?", session_id)
+	_, err = db.Query("DELETE FROM cookies WHERE sessionId = ?", sessionId)
 	if err != nil {
 		return fmt.Errorf("error deleting session: %s", err)
 	}

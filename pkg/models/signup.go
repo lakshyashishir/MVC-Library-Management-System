@@ -12,16 +12,12 @@ func SignupPost(User types.User) error {
 	}
 
 	defer db.Close()
-	UserList := User
+	userList := User
 
-	// fmt.Println(UserList)
-
-	_, err = db.Query("INSERT INTO users (username, hash, salt, role) VALUES (?, ?, ?, ?)", UserList.Username, UserList.Hash, UserList.Salt, UserList.Role)
+	_, err = db.Query("INSERT INTO users (username, hash, salt, role) VALUES (?, ?, ?, ?)", userList.Username, userList.Hash, userList.Salt, userList.Role)
 	if err != nil {
 		return fmt.Errorf("error registering User: %s", err)
 	}
-
-	// fmt.Println("User registered successfully")
 
 	return nil
 }

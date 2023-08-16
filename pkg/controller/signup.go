@@ -21,8 +21,6 @@ func Signup(w http.ResponseWriter, request *http.Request) {
 		password := request.FormValue("password")
 		role := request.FormValue("role")
 
-		// fmt.Println(username, password, role)
-
 		if CheckUsernameExist(username) {
 			log.Printf("Username already exist")
 			return
@@ -31,17 +29,15 @@ func Signup(w http.ResponseWriter, request *http.Request) {
 		adminExists := CheckAdminExist()
 
 		if role == "admin" && adminExists {
-			// fmt.Fprintf(w, "Admin already exist")
 			role = "admin requested"
 		}
 
 		hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			log.Println(err)
+			http.Redirect(w, request, "/500", http.StatusSeeOther)
 			return
 		}
-
-		// fmt.Println(string(hash))
 
 		salt := "salt"
 
@@ -52,49 +48,48 @@ func Signup(w http.ResponseWriter, request *http.Request) {
 			Role:     types.UserRole(role),
 		}
 
-		// fmt.Println(user)
-
 		errSignup := models.SignupPost(user)
 		if errSignup != nil {
 			log.Println(errSignup)
+			http.Redirect(w, request, "/500", http.StatusSeeOther)
 			return
 		}
 
-		sessionID, err := models.GeneratSessionID()
+		sessionId, err := models.GeneratSessionID()
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
 		cookie := http.Cookie{
-			Name:     "SessionID",
-			Value:    sessionID,
+			Name:     "sessionId",
+			Value:    sessionId,
 			Expires:  time.Now().Add(48 * time.Hour),
 			HttpOnly: true,
 			Path:     "/",
 		}
 		http.SetCookie(w, &cookie)
 
-		UserID, err := models.GetUserIDFromUsername(username)
+		userId, err := models.GetUserIDFromUsername(username)
 		if err != nil {
 			log.Println(err)
+			http.Redirect(w, request, "/500", http.StatusSeeOther)
 			return
 		}
 
-		err = models.UpdateSessionID(UserID, sessionID)
+		err = models.UpdateSessionID(userId, sessionId)
 		if err != nil {
 			log.Println(err)
+			http.Redirect(w, request, "/500", http.StatusSeeOther)
 			return
 		}
-
-		// fmt.Fprintf(w, "User created successfully")
 
 		if role == "admin" {
 			http.Redirect(w, request, "/admin", http.StatusSeeOther)
 		} else if role == "user" {
 			http.Redirect(w, request, "/user", http.StatusSeeOther)
 		} else if role == "admin requested" {
-			http.Redirect(w, request, "/reqAdmin", http.StatusSeeOther)
+			http.Redirect(w, request, "/pendingAdminApproval", http.StatusSeeOther)
 		} else {
 			http.Redirect(w, request, "/login", http.StatusSeeOther)
 		}

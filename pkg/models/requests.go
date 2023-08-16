@@ -76,7 +76,7 @@ func GetAllPendingRequests() ([]types.RequestAdminView, error) {
 
 	defer db.Close()
 
-	var RequestList []types.RequestAdminView
+	var requestList []types.RequestAdminView
 
 	rows, err := db.Query("SELECT * FROM requests WHERE book_status = 'pending'")
 	if err != nil {
@@ -91,8 +91,6 @@ func GetAllPendingRequests() ([]types.RequestAdminView, error) {
 			return nil, fmt.Errorf("error scanning request rows: %s", err)
 		}
 
-		// fmt.Println(request.BookID)
-
 		request.Username, err = GetUsernameFromID(request.UserID)
 		if err != nil {
 			return nil, fmt.Errorf("error getting username: %s", err)
@@ -105,10 +103,10 @@ func GetAllPendingRequests() ([]types.RequestAdminView, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error getting book author: %s", err)
 		}
-		RequestList = append(RequestList, request)
+		requestList = append(requestList, request)
 	}
 
-	return RequestList, nil
+	return requestList, nil
 }
 
 func GetAllRejectedRequests() ([]types.RequestAdminView, error) {
@@ -119,7 +117,7 @@ func GetAllRejectedRequests() ([]types.RequestAdminView, error) {
 
 	defer db.Close()
 
-	var RequestList []types.RequestAdminView
+	var requestList []types.RequestAdminView
 
 	rows, err := db.Query("SELECT * FROM requests WHERE book_status = 'rejected'")
 	if err != nil {
@@ -134,8 +132,6 @@ func GetAllRejectedRequests() ([]types.RequestAdminView, error) {
 			return nil, fmt.Errorf("error scanning request rows: %s", err)
 		}
 
-		// fmt.Println(request.BookID)
-
 		request.Username, err = GetUsernameFromID(request.UserID)
 		if err != nil {
 			return nil, fmt.Errorf("error getting username: %s", err)
@@ -148,8 +144,8 @@ func GetAllRejectedRequests() ([]types.RequestAdminView, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error getting book author: %s", err)
 		}
-		RequestList = append(RequestList, request)
+		requestList = append(requestList, request)
 	}
 
-	return RequestList, nil
+	return requestList, nil
 }

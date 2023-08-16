@@ -17,7 +17,7 @@ func Start() {
 	r.HandleFunc("/books", controller.UserViewBook).Methods("GET")
 	r.HandleFunc("/myBooks", controller.UserBooks).Methods("GET")
 	r.HandleFunc("/admin/books", controller.AdminViewBook).Methods("GET")
-	r.HandleFunc("/reqAdmin", controller.RequestAdmin).Methods("GET")
+	r.HandleFunc("/pendingAdminApproval", controller.RequestAdmin).Methods("GET")
 	r.HandleFunc("/adminRequests", controller.AdminRequests).Methods("GET")
 	r.HandleFunc("/issuedBooks", controller.IssuedBooks).Methods("GET")
 	r.HandleFunc("/addBook", controller.AddBook).Methods("GET")

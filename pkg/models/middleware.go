@@ -7,7 +7,7 @@ import (
 )
 
 func Auth(w http.ResponseWriter, r *http.Request) (types.User, error) {
-	cookie, err := r.Cookie("SessionID")
+	cookie, err := r.Cookie("sessionId")
 	if err != nil {
 		fmt.Println("not authenticated")
 		return types.User{}, err

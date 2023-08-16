@@ -5,7 +5,7 @@ import (
 	"mvc/pkg/types"
 )
 
-func GetBookTitleByBookID(bookID int) (string, error) {
+func GetBookTitleByBookID(bookId int) (string, error) {
 	db, err := Connect()
 	if err != nil {
 		return "", fmt.Errorf("error connecting to DB: %s", err)
@@ -13,13 +13,13 @@ func GetBookTitleByBookID(bookID int) (string, error) {
 
 	defer db.Close()
 
-	var Title string
-	err = db.QueryRow("SELECT title FROM books WHERE book_id = ?", bookID).Scan(&Title)
+	var title string
+	err = db.QueryRow("SELECT title FROM books WHERE book_id = ?", bookId).Scan(&title)
 	if err != nil {
 		return "", fmt.Errorf("error searching book: %s", err)
 	}
 
-	return Title, nil
+	return title, nil
 }
 
 func GetUserIDFromUsername(username string) (int, error) {
@@ -30,16 +30,16 @@ func GetUserIDFromUsername(username string) (int, error) {
 
 	defer db.Close()
 
-	var UserID int
-	err = db.QueryRow("SELECT user_id FROM users WHERE username = ?", username).Scan(&UserID)
+	var userId int
+	err = db.QueryRow("SELECT user_id FROM users WHERE username = ?", username).Scan(&userId)
 	if err != nil {
 		return 0, fmt.Errorf("error searching user: %s", err)
 	}
 
-	return UserID, nil
+	return userId, nil
 }
 
-func GetUsernameFromID(userID int) (string, error) {
+func GetUsernameFromID(userId int) (string, error) {
 	db, err := Connect()
 	if err != nil {
 		return "", fmt.Errorf("error connecting to DB: %s", err)
@@ -47,13 +47,13 @@ func GetUsernameFromID(userID int) (string, error) {
 
 	defer db.Close()
 
-	var Username string
-	err = db.QueryRow("SELECT username FROM users WHERE user_id = ?", userID).Scan(&Username)
+	var username string
+	err = db.QueryRow("SELECT username FROM users WHERE user_id = ?", userId).Scan(&username)
 	if err != nil {
 		return "", fmt.Errorf("error searching user: %s", err)
 	}
 
-	return Username, nil
+	return username, nil
 }
 
 func GetBookStatusByBookID(bookID int) (types.BookStatus, error) {
@@ -74,7 +74,7 @@ func GetBookStatusByBookID(bookID int) (types.BookStatus, error) {
 	return book.BookStatus, nil
 }
 
-func GetBookIdByRequestId(RequestID int) (int, error) {
+func GetBookIdByRequestId(requestId int) (int, error) {
 	db, err := Connect()
 	if err != nil {
 		return 0, fmt.Errorf("error connecting to DB: %s", err)
@@ -82,16 +82,16 @@ func GetBookIdByRequestId(RequestID int) (int, error) {
 
 	defer db.Close()
 
-	var BookID int
-	err = db.QueryRow("SELECT book_id FROM requests WHERE request_id = ?", RequestID).Scan(&BookID)
+	var bookId int
+	err = db.QueryRow("SELECT book_id FROM requests WHERE request_id = ?", requestId).Scan(&bookId)
 	if err != nil {
 		return 0, fmt.Errorf("error searching book: %s", err)
 	}
 
-	return BookID, nil
+	return bookId, nil
 }
 
-func GetUserIdByBookId(BookID int) (int, error) {
+func GetUserIdByBookId(bookId int) (int, error) {
 	db, err := Connect()
 	if err != nil {
 		return 0, fmt.Errorf("error connecting to DB: %s", err)
@@ -99,11 +99,11 @@ func GetUserIdByBookId(BookID int) (int, error) {
 
 	defer db.Close()
 
-	var UserID int
-	err = db.QueryRow("SELECT user_id FROM requests WHERE book_id = ?", BookID).Scan(&UserID)
+	var userId int
+	err = db.QueryRow("SELECT user_id FROM requests WHERE book_id = ?", bookId).Scan(&userId)
 	if err != nil {
 		return 0, fmt.Errorf("error searching user: %s", err)
 	}
 
-	return UserID, nil
+	return userId, nil
 }
